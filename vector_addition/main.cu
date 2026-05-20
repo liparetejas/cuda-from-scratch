@@ -12,7 +12,7 @@ __global__ void vecAdd(float *a, float *b, float *c, int N) {
 }
 
 // Main
-int main() {
+int main(int argc, char** argv) {
     int N = 1 << 26; // 2^26 Elements
     size_t bytes = N * sizeof(float);
     std::cout << "Vector addition of size: " << N << " elements" << std::endl;
@@ -40,8 +40,13 @@ int main() {
     cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice);
 
     // Define Thread block and grid structure
-    // 256 threads per block
+    // 256 threads per block as a default
     int threadsPerBlock = 256;
+
+    if(argc > 1) {
+        threadsPerBlock = std::atoi(argv[1]);
+    }
+
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
     std::cout << "Launching kernel with " << blocksPerGrid << " blocks and " << threadsPerBlock << " threads per block" << std::endl;
